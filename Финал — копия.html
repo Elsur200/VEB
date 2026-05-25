@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Учет демонстраций и достижений студентов ЯПЭК</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" />
+<style>
+@keyframes bgShift {
+  0%   { background-position: 0% 50%; }
+  25%  { background-position: 100% 50%; }
+  50%  { background-position: 100% 100%; }
+  75%  { background-position: 0% 100%; }
+  100% { background-position: 0% 50%; }
+}
+
+body {
+  background: linear-gradient(-45deg, #e0e7ff, #c7d2fe, #a5b4fc, #ddd6fe, #c4b5fd, #e9d5ff, #dbeafe);
+  background-size: 400% 400%;
+  animation: bgShift 15s ease infinite;
+  color: #1e293b;
+  transition: background 0.5s ease, color 0.3s ease;
+  min-height: 100vh;
+}
+body.dark-mode {
+  background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #0c4a6e, #1e293b, #111827);
+  background-size: 400% 400%;
+  animation: bgShift 15s ease infinite;
+  color: #e2e8f0;
+}
+
+#mainContent { display: none; }
+
+.navbar {
+  background: rgba(255,255,255,0.25) !important;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.06);
+}
+body.dark-mode .navbar {
+  background: rgba(15,23,42,0.4) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+.navbar .navbar-brand, .navbar .nav-link { color: #4c1d95 !important; font-weight: 600; }
+body.dark-mode .navbar .navbar-brand, body.dark-mode .navbar .nav-link { color: #e2e8f0 !important; }
+
+.footer {
+  background: rgba(255,255,255,0.2) !important;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-top: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.06);
+}
+body.dark-mode .footer {
+  background: rgba(15,23,42,0.35) !important;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
+}
+.footer a { color: #4c1d95; text-decoration: none; font-weight: 500; }
+body.dark-mode .footer a { color: #c4b5fd; }
+.footer a:hover { text-decoration: underline; }
+
+/* ===== 3D-КАРТОЧКИ ===== */
+@keyframes floatIn {
+  0% { opacity: 0; transform: translateY(30px) rotateX(8deg); }
+  100% { opacity: 1; transform: translateY(0) rotateX(0); }
+}
+.card-3d {
+  perspective: 800px;
+  transform-style: preserve-3d;
+}
+.card-3d > .card,
+.card-3d > .achievement-card,
+.card-3d > .list-group-item {
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(.4,2.5,.6,.8), box-shadow 0.35s ease;
+  animation: floatIn 0.6s ease-out both;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(76, 29, 149, 0.08);
+}
+.card-3d > .card:hover,
+.card-3d > .achievement-card:hover {
+  transform: translateY(-6px) rotateX(3deg) rotateY(-2deg) scale(1.015);
+  box-shadow: 0 16px 48px rgba(76, 29, 149, 0.18);
+}
+body.dark-mode .card-3d > .card,
+body.dark-mode .card-3d > .achievement-card,
+body.dark-mode .card-3d > .list-group-item {
+  background: rgba(30,27,75,0.35);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  color: #e2e8f0;
+}
+body.dark-mode .card-3d > .card:hover,
+body.dark-mode .card-3d > .achievement-card:hover {
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+
+/* ===== УНИКАЛЬНЫЕ ФОНЫ ПАНЕЛЕЙ ===== */
+@keyframes panelShift1 {
+  0%   { background-position: 0% 50%; } 100% { background-position: 100% 50%; }
+}
+@keyframes panelShift2 {
+  0%   { background-position: 100% 0%; } 100% { background-position: 0% 100%; }
+}
+@keyframes panelShift3 {
+  0%   { background-position: 50% 0%; } 100% { background-position: 50% 100%; }
+}
+
+/* ===== ДОБАВИТЬ ДОСТИЖЕНИЕ — ВАШЕ ФОТО ===== */
+#add-achievement {
+  background: url('https://admin.яновости.рф/upload/content/3f3/uuddurrcuh1kwjj2flivq7gpjp2du0g2.jpeg') center/cover no-repeat fixed;
+  padding: 70px; border-radius: 24px; color: #4c1d95; position: relative; overflow: hidden;
+}
+#add-achievement::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(237,233,254,0.35), rgba(224,231,255,0.28), rgba(219,234,254,0.32));
+  z-index: 0; transition: background 0.5s ease;
+}
+body.dark-mode #add-achievement {
+  background: url('https://admin.яновости.рф/upload/content/3f3/uuddurrcuh1kwjj2flivq7gpjp2du0g2.jpeg') center/cover no-repeat fixed;
+  color: #c4b5fd;
+}
+body.dark-mode #add-achievement::before {
+  background: linear-gradient(135deg, rgba(30,27,75,0.45), rgba(23,37,84,0.38), rgba(12,74,110,0.42));
+}
+#add-achievement > * { position: relative; z-index: 1; }
+
+/* === ДОСТИЖЕНИЯ СТУДЕНТОВ — ВАШЕ ФОТО НА ФОНЕ === */
+#my-achievements {
+  background: url('https://img.freepik.com/free-photo/beautiful-rainbow-nature_23-2151498248.jpg?semt=ais_hybrid&w=740&q=80') center/cover no-repeat fixed;
+  padding: 20px; border-radius: 24px; position: relative; overflow: hidden;
+}
+#my-achievements::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(240,253,244,0.35), rgba(220,252,231,0.28), rgba(209,250,229,0.32));
+  z-index: 0; transition: background 0.5s ease;
+}
+body.dark-mode #my-achievements {
+  background: url('https://img.freepik.com/free-photo/beautiful-rainbow-nature_23-2151498248.jpg?semt=ais_hybrid&w=740&q=80') center/cover no-repeat fixed;
+}
+body.dark-mode #my-achievements::before {
+  background: linear-gradient(135deg, rgba(5,46,22,0.45), rgba(6,78,59,0.38), rgba(20,83,45,0.42));
+}
+#my-achievements > * { position: relative; z-index: 1; }
+
+/* === РЕЙТИНГ — ФОТО ВИДНО ЧЁТКО, БЕЗ ЛИНИЙ ТАБЛИЦЫ === */
+#rating {
+  background: url(https://disshelp.ru/blog/wp-content/uploads/2019/10/college-students-studying-on-lawn-classmates-university.jpg) center/cover no-repeat;
+  position: relative; overflow: hidden; border-radius: 24px; padding: 20px;
+  min-height: 450px;
+}
+#rating::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(237,233,254,0.25), rgba(196,181,253,0.18), rgba(224,231,255,0.22));
+  z-index: 0;
+  transition: background 0.5s ease;
+}
+body.dark-mode #rating {
+  background: url('https://images.unsplash.com/photo-1523050854058-8df90110c8f1?w=1200&q=80') center/cover no-repeat;
+}
+body.dark-mode #rating::before {
+  background: linear-gradient(135deg, rgba(15,23,42,0.35), rgba(30,27,75,0.30), rgba(76,29,149,0.25));
+}
+#rating > * { position: relative; z-index: 1; }
+
+#rating .table-responsive {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+#rating table {
+  color: #fff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+  background: transparent !important;
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important;
+}
+#rating table thead {
+  background: transparent !important;
+  color: #fff !important;
+}
+#rating table thead th {
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 8px 12px;
+}
+#rating table tbody tr {
+  background: transparent !important;
+  transition: background 0.2s ease;
+}
+#rating table tbody tr:hover {
+  background: rgba(255,255,255,0.15) !important;
+  border-radius: 8px;
+}
+#rating table tbody tr td {
+  background: transparent !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 8px 12px;
+}
+#rating table tbody tr:nth-of-type(odd) > *,
+#rating table tbody tr:nth-of-type(even) > * {
+  background: transparent !important;
+}
+
+/* === ПРЕПОДАВАТЕЛЬ — ФОТО ВИДНО ЧЁТКО, БЕЗ ЛИНИЙ ТАБЛИЦЫ === */
+#admin {
+  background: url('https://soroka-news.ru/wp-content/uploads/2022/09/d183d187d0b0d182d181d18f-d0b2-d183d181d0bbd0bed0b2d0b8d18fd185-d0bfd180d0b8d0b1d0bbd0b8d0b6d0b5d0bdd0bdd18bd185-d0ba-d180d0b5d0b0-1000x600.jpg') center/cover no-repeat;
+  position: relative; overflow: hidden; border-radius: 24px; padding: 20px;
+  min-height: 500px;
+}
+#admin::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(253,242,248,0.20), rgba(252,231,243,0.15), rgba(243,232,255,0.18));
+  z-index: 0;
+  transition: background 0.5s ease;
+}
+body.dark-mode #admin {
+  background: url('https://soroka-news.ru/wp-content/uploads/2022/09/d183d187d0b0d182d181d18f-d0b2-d183d181d0bbd0bed0b2d0b8d18fd185-d0bfd180d0b8d0b1d0bbd0b8d0b6d0b5d0bdd0bdd18bd185-d0ba-d180d0b5d0b0-1000x600.jpg') center/cover no-repeat;
+}
+body.dark-mode #admin::before {
+  background: linear-gradient(135deg, rgba(59,7,100,0.30), rgba(76,5,25,0.25), rgba(15,23,42,0.30));
+}
+#admin > * { position: relative; z-index: 1; }
+
+/* Таблица пользователей — БЕЗ ЛИНИЙ, НА ФОНЕ */
+#users .table-responsive {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+#users table {
+  color: #fff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+  background: transparent !important;
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important;
+}
+#users table thead {
+  background: transparent !important;
+  color: #fff !important;
+}
+#users table thead th {
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 8px 12px;
+}
+#users table tbody tr {
+  background: transparent !important;
+  transition: background 0.2s ease;
+}
+#users table tbody tr:hover {
+  background: rgba(255,255,255,0.15) !important;
+  border-radius: 8px;
+}
+#users table tbody tr td {
+  background: transparent !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 8px 12px;
+}
+#users table tbody tr:nth-of-type(odd) > *,
+#users table tbody tr:nth-of-type(even) > * {
+  background: transparent !important;
+}
+
+/* ===== ТАБЫ ===== */
+.nav-tabs { border: none; gap: 6px; padding: 8px; background: rgba(255,255,255,0.3); backdrop-filter: blur(10px); border-radius: 16px; }
+body.dark-mode .nav-tabs { background: rgba(15,23,42,0.3); }
+.nav-tabs .nav-link {
+  background: transparent; color: #4c1d95; border: none; border-radius: 10px; padding: 10px 18px;
+  transition: all 0.3s ease; font-weight: 500;
+}
+.nav-tabs .nav-link:hover { background: rgba(255,255,255,0.4); }
+.nav-tabs .nav-link.active {
+  background: rgba(76,29,149,0.12); color: #4c1d95; font-weight: 700;
+  box-shadow: 0 4px 12px rgba(76,29,149,0.08);
+}
+body.dark-mode .nav-tabs .nav-link { color: #c4b5fd; }
+body.dark-mode .nav-tabs .nav-link:hover { background: rgba(255,255,255,0.06); }
+body.dark-mode .nav-tabs .nav-link.active { background: rgba(196,181,253,0.12); color: #e2e8f0; }
+
+/* ===== ФОРМЫ ===== */
+.form-control, .form-select {
+  background: rgba(255,255,255,0.5) !important; color: #1e293b !important;
+  border: 1px solid rgba(76,29,149,0.15) !important; border-radius: 12px !important;
+  transition: all 0.25s ease;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #8b5cf6 !important; box-shadow: 0 0 0 3px rgba(139,92,246,0.15) !important;
+  background: rgba(255,255,255,0.7) !important;
+}
+.form-label { color: #1e293b !important; font-weight: 600; }
+body.dark-mode .form-control, body.dark-mode .form-select {
+  background: rgba(30,27,75,0.35) !important; color: #e2e8f0 !important; border-color: rgba(196,181,253,0.2) !important;
+}
+body.dark-mode .form-control:focus, body.dark-mode .form-select:focus {
+  background: rgba(30,27,75,0.55) !important; border-color: #a78bfa !important;
+}
+body.dark-mode .form-label { color: #c4b5fd !important; }
+
+/* ===== ТАБЛИЦЫ ===== */
+.table { color: #1e293b; border-radius: 12px; overflow: hidden; }
+.table-striped > tbody > tr:nth-of-type(odd) > * { background-color: rgba(76,29,149,0.04); color: #1e293b; }
+.table thead { background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; }
+.table thead th { font-weight: 600; letter-spacing: 0.3px; }
+body.dark-mode .table { color: #e2e8f0; }
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * { background-color: rgba(196,181,253,0.06); color: #e2e8f0; }
+body.dark-mode .table thead { background: linear-gradient(135deg, #4c1d95, #6d28d9); }
+
+/* ===== КНОПКИ ===== */
+.btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa); border: none; border-radius: 10px;
+  font-weight: 600; box-shadow: 0 4px 12px rgba(124,58,237,0.2); transition: all 0.3s ease;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.35); }
+.btn-outline-primary { color: #7c3aed; border-color: #c4b5fd; }
+.btn-outline-primary:hover { background: #7c3aed; color: white; }
+.btn-outline-success { color: #059669; border-color: #6ee7b7; }
+.btn-outline-success:hover { background: #059669; color: white; }
+.btn-outline-danger { color: #dc2626; border-color: #fca5a5; }
+.btn-outline-danger:hover { background: #dc2626; color: white; }
+.btn-success { background: linear-gradient(135deg, #059669, #34d399); border: none; border-radius: 10px; }
+.btn-danger { background: linear-gradient(135deg, #dc2626, #f87171); border: none; border-radius: 10px; }
+body.dark-mode .btn-outline-primary { color: #a78bfa; border-color: #6d28d9; }
+body.dark-mode .btn-outline-primary:hover { background: #6d28d9; color: white; }
+body.dark-mode .btn-outline-success { color: #34d399; border-color: #059669; }
+body.dark-mode .btn-outline-danger { color: #f87171; border-color: #dc2626; }
+
+.badge.bg-warning { background-color: #fbbf24 !important; color: #0f172a !important; }
+.badge.bg-success { background-color: #10b981 !important; color: #fff !important; }
+.badge.bg-danger { background-color: #ef4444 !important; color: #fff !important; }
+
+.achievement-header { display: flex; justify-content: space-between; align-items: center; }
+.achievement-title { font-weight: 700; font-size: 1.15em; color: #1e293b; }
+.achievement-meta { font-size: 0.9em; color: #64748b; }
+body.dark-mode .achievement-title { color: #e2e8f0; }
+body.dark-mode .achievement-meta { color: #94a3b8; }
+.achievement-photos { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
+.photo-thumb {
+  width: 100px; height: 70px; object-fit: cover; cursor: pointer;
+  border: 2px solid rgba(139,92,246,0.2); border-radius: 8px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.photo-thumb:hover { transform: scale(1.08) rotate(2deg); box-shadow: 0 6px 20px rgba(124,58,237,0.3); }
+.pending-card { border-left: 4px solid #fbbf24; }
+.approved-card { border-left: 4px solid #10b981; }
+.rejected-card { border-left: 4px solid #ef4444; }
+
+.modal-content {
+  background: rgba(255,255,255,0.75); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 20px; overflow: hidden; color: #1e293b;
+}
+body.dark-mode .modal-content {
+  background: rgba(15,23,42,0.85); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0;
+}
+.modal-header, .modal-footer { border-color: rgba(76,29,149,0.1); }
+body.dark-mode .btn-close { filter: invert(1) brightness(1.2); }
+
+#themeToggle {
+  background: transparent; border: 1px solid rgba(76,29,149,0.25); color: #4c1d95;
+  font-size: 1.2rem; padding: 0.3rem 0.65rem; border-radius: 0.6rem; transition: all 0.3s ease; cursor: pointer;
+}
+#themeToggle:hover { background: rgba(139,92,246,0.12); transform: scale(1.1); }
+body.dark-mode #themeToggle { border-color: rgba(196,181,253,0.3); color: #c4b5fd; }
+body.dark-mode #themeToggle:hover { background: rgba(196,181,253,0.15); }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tab-pane.fade.show.active { animation: fadeSlideUp 0.5s ease-out; }
+
+.glow-orb {
+  position: absolute; width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,92,246,0.15), transparent 70%);
+  pointer-events: none; z-index: 0; filter: blur(40px);
+  animation: orbFloat 8s ease-in-out infinite;
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -20px) scale(1.15); }
+}
+
+/* Отчёты — на фоне, без линий */
+#reports table {
+  color: #fff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important;
+}
+#reports table thead {
+  background: transparent !important;
+  color: #fff !important;
+}
+#reports table thead th {
+  background: transparent !important;
+  border: none !important;
+  color: #fff !important;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+  font-weight: 700;
+}
+#reports table tbody tr {
+  background: transparent !important;
+}
+#reports table tbody tr td {
+  background: transparent !important;
+  color: #fff !important;
+  border: none !important;
+}
+#reports table tbody tr:nth-of-type(odd) > *,
+#reports table tbody tr:nth-of-type(even) > * {
+  background: transparent !important;
+}
+#reports .table-responsive {
+  background: transparent !important;
+}
+
+/* ===== ДОСТИЖЕНИЯ БЕЗ КАРТОЧЕК — ПРОСТОЙ СПИСОК НА ФОНЕ ===== */
+.achievement-item {
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(10px);
+  border-left: 4px solid #7c3aed;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: floatIn 0.5s ease-out both;
+}
+.achievement-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(124,58,237,0.15);
+}
+body.dark-mode .achievement-item {
+  background: rgba(30,27,75,0.55);
+  border-left-color: #a78bfa;
+}
+.achievement-item.approved { border-left-color: #10b981; }
+.achievement-item.rejected { border-left-color: #ef4444; }
+.achievement-item.pending { border-left-color: #fbbf24; }
+
+.achievement-item-title { font-weight: 700; font-size: 1.1em; margin-bottom: 6px; color: #1e293b; }
+body.dark-mode .achievement-item-title { color: #e2e8f0; }
+.achievement-item-meta { font-size: 0.92em; color: #475569; line-height: 1.5; }
+body.dark-mode .achievement-item-meta { color: #cbd5e1; }
+.achievement-item-photos { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.achievement-item-photo {
+  width: 90px; height: 65px; object-fit: cover; border-radius: 8px;
+  border: 2px solid rgba(139,92,246,0.25); cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.achievement-item-photo:hover { transform: scale(1.05); }
+</style>
+</head>
+<body>
+<div id="mainContent" style="display: none;">
+<nav class="navbar navbar-expand-lg">
+<div class="container">
+<a class="navbar-brand" href="#">Учет демонстраций и достижений студентов ЯПЭК</a>
+<div class="navbar-nav align-items-center">
+<span class="nav-link"></span>
+<button id="btnAuth" class="btn btn-outline-primary me-2">Войти / Регистрация</button>
+<button id="btnLogout" class="btn btn-outline-primary d-none me-2">Выйти</button>
+<button id="themeToggle" class="btn d-none" title="Ночной режим">🌙</button>
+</div>
+</div>
+</nav>
+
+<div class="container mt-4 position-relative">
+<div class="glow-orb" style="top: -100px; right: -50px;"></div>
+<div class="glow-orb" style="bottom: -100px; left: -80px; animation-delay: -3s;"></div>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+<li class="nav-item"><button class="nav-link active" id="add-achievement-tab" data-bs-toggle="tab" data-bs-target="#add-achievement" type="button">Добавить достижение</button></li>
+<li class="nav-item"><button class="nav-link" id="my-achievements-tab" data-bs-toggle="tab" data-bs-target="#my-achievements" type="button">Достижения студентов</button></li>
+<li class="nav-item"><button class="nav-link" id="rating-tab" data-bs-toggle="tab" data-bs-target="#rating" type="button">Рейтинг</button></li>
+<li class="nav-item"><button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button">Преподаватель</button></li>
+</ul>
+
+<div class="tab-content" id="myTabContent" style="margin-top: 16px;">
+
+<!-- ===== ДОБАВИТЬ ДОСТИЖЕНИЕ ===== -->
+<div class="tab-pane fade show active" id="add-achievement" role="tabpanel">
+<form id="achievementForm" class="mt-3">
+<div class="mb-3"><label for="fullName" class="form-label">ФИО студента</label><input type="text" class="form-control" id="fullName" placeholder="Введите ФИО полностью" required></div>
+<div class="mb-3"><label for="achievementType" class="form-label">Тип достижения</label><select class="form-select" id="achievementType" required>
+<option value="">Выберите тип</option><option value="учебное">Учебное</option><option value="научное">Научное</option><option value="спортивное">Спортивное</option><option value="творческое">Творческое</option><option value="социальное">Социальное</option></select></div>
+<div class="mb-3"><label for="level" class="form-label">Уровень</label><select class="form-select" id="level" required>
+<option value="">Выберите уровень</option><option value="колледж">Колледж</option><option value="город">Город</option><option value="регион">Регион</option><option value="рф">РФ</option></select></div>
+<div class="mb-3"><label for="eventName" class="form-label">Название мероприятия/достижения</label><input type="text" class="form-control" id="eventName" required></div>
+<div class="mb-3"><label for="date" class="form-label">Дата</label><input type="date" class="form-control" id="date" required></div>
+<div class="mb-3"><label for="document" class="form-label">Подтверждающий документ (PDF/JPG)</label><input type="file" class="form-control" id="document" accept=".pdf,.jpg,.jpeg" required></div>
+<div class="mb-3"><label for="photo" class="form-label">Фото достижения (опционально)</label><input type="file" class="form-control" id="photo" accept=".jpg,.jpeg,.png" multiple></div>
+<button type="submit" class="btn btn-primary px-4 py-2">Отправить на проверку</button>
+</form>
+</div>
+
+<!-- ===== ДОСТИЖЕНИЯ СТУДЕНТОВ ===== -->
+<div class="tab-pane fade" id="my-achievements" role="tabpanel">
+<div class="mt-3">
+<div class="d-flex justify-content-between mb-3 flex-wrap gap-2">
+<div>
+<button class="btn btn-outline-primary filter-btn active" data-status="all">Все</button>
+<button class="btn btn-outline-success filter-btn" data-status="approved">Одобрено</button>
+<button class="btn btn-outline-danger filter-btn" data-status="rejected">Отклонено</button>
+</div>
+<div class="input-group" style="max-width: 300px;"><input type="text" class="form-control" id="searchAchievements" placeholder="Поиск..." /><span class="input-group-text"><i class="bi bi-search"></i></span></div>
+</div>
+<div id="achievementsList"></div>
+</div>
+</div>
+
+<!-- ===== РЕЙТИНГ ===== -->
+<div class="tab-pane fade" id="rating" role="tabpanel">
+<div class="mt-3">
+<h4 class="fw-bold mb-3" style="color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">🏆 Рейтинг студентов</h4>
+<div class="table-responsive">
+<table class="table table-hover mb-0"><thead><tr><th>Место</th><th>ФИО</th><th>Группа</th><th>Баллы</th></tr></thead><tbody id="ratingTableBody"></tbody></table>
+</div>
+</div>
+</div>
+
+<!-- ===== ПРЕПОДАВАТЕЛЬ ===== -->
+<div class="tab-pane fade" id="admin" role="tabpanel">
+<div class="mt-3">
+<h4 class="fw-bold mb-3" style="color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">👨‍🏫 Панель преподавателя</h4>
+<ul class="nav nav-tabs" id="adminTabs" role="tablist">
+<li class="nav-item"><button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button">На проверке</button></li>
+<li class="nav-item"><button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button">Пользователи</button></li>
+<li class="nav-item"><button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button">Отчёты</button></li>
+</ul>
+<div class="tab-content mt-3" id="adminTabContent">
+<div class="tab-pane fade show active" id="pending" role="tabpanel"><div id="pendingAchievementsList"></div></div>
+<div class="tab-pane fade" id="users" role="tabpanel">
+<div class="table-responsive">
+<table class="table table-hover mb-0"><thead><tr><th>ФИО</th><th>Логин</th><th>Роль</th><th>Группа</th><th>Действия</th></tr></thead><tbody id="usersTableBody"></tbody></table>
+</div>
+</div>
+<div class="tab-pane fade" id="reports" role="tabpanel"><div id="reportsContainer"></div></div>
+</div>
+</div>
+</div>
+
+</div></div>
+</div>
+
+<footer class="footer mt-5"><div class="container py-4"><div class="row">
+<div class="col-md-6"><h5>Учет демонстраций и достижений студентов ЯПЭК</h5><p>Система учёта предназначена для подтверждения академических и внеучебных достижений студентов Ярославского промышленно‑экономического колледжа.</p></div>
+<div class="col-md-3"><h6>Официальный сайт ЯПЭК в ВК</h6><p><a href="https://vk.com/public180856037?ysclid=mpg171cc5704359078" target="_blank">https://vk.com/public180856037</a></p></div>
+<div class="col-md-3"><h6>Официальный сайт ЯПЭК</h6><p><a href="https://www.yapek.edu.ru" target="_blank">www.yapek.edu.ru</a></p><p class="mt-2">© 2026 Ярославский промышленно‑экономический колледж</p></div>
+</div></div></footer>
+
+<div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="photoModalLabel">Фото достижения</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><img id="modalImage" src="" class="img-fluid rounded" alt="Фото достижения" /></div></div></div></div>
+
+<div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+<div class="modal-dialog"><div class="modal-content p-3"><h5 class="modal-title" id="authModalLabel">Авторизация / Регистрация</h5>
+<div class="d-flex mb-3"><button class="btn btn-primary me-2 active" id="showLogin">Войти</button><button class="btn btn-outline-secondary" id="showRegister">Регистрация</button></div>
+<form id="loginForm" class="auth-form"><div class="mb-3"><label for="authLogin" class="form-label">Логин</label><input type="text" class="form-control" id="authLogin" required /></div><div class="mb-3"><label for="authPassword" class="form-label">Пароль</label><input type="password" class="form-control" id="authPassword" required /></div><button type="submit" class="btn btn-primary w-100">Войти</button></form>
+<form id="registerForm" class="auth-form d-none"><div class="mb-3"><label for="regFullName" class="form-label">ФИО</label><input type="text" class="form-control" id="regFullName" placeholder="Введите ФИО полностью" required></div><div class="mb-3"><label for="regLogin" class="form-label">Логин</label><input type="text" class="form-control" id="regLogin" required /></div><div class="mb-3"><label for="regPassword" class="form-label">Пароль</label><input type="password" class="form-control" id="regPassword" required /></div><button type="submit" class="btn btn-success w-100">Зарегистрироваться</button></form>
+</div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+let users = [
+  { fio: "Аббасов Э. М.", login: "abbasov", role: "Студент", group: "22ИПВ" },
+  { fio: "Петрова А. В.", login: "petrova", role: "Студент", group: "22ИПВ" },
+  { fio: "Большаков Т. Р.", login: "bolsakov", role: "Студент", group: "22ИПВ" },
+  { fio: "Золин А. М.", login: "zolin", role: "Студент", group: "22ИПВ" },
+  { fio: "Головкина А. Н.", login: "golovkina", role: "Студент", group: "22ИПВ" }
+];
+
+let achievements = [
+  { id: 1, type: 'Научное', level: 'Региональный', name: 'Победитель олимпиады по программированию', date: '2026-11-15', points: 50, status: 'approved', studentFio: 'Аббасов Э. М.', studentGroup: '22ИПВ', photos: ['https://via.placeholder.com/300x200/7c3aed/ffffff?text=Фото+1'] },
+  { id: 2, type: 'Научное', level: 'Колледж', name: 'Участник научной конференции', date: '2026-10-20', points: 30, status: 'approved', studentFio: 'Петрова А. В.', studentGroup: '22ИПВ', photos: [] },
+  { id: 3, type: 'Социальное', level: 'Город', name: 'Волонтёрская деятельность', date: '2026-09-10', points: 25, status: 'pending', studentFio: 'Большаков Т. Р.', studentGroup: '22ИПВ', photos: [] },
+  { id: 4, type: 'Спортивное', level: 'Колледж', name: 'Спортсмен года колледжа', date: '2026-12-01', points: 20, status: 'approved', studentFio: 'Золин А. М.', studentGroup: '22ИПВ', photos: [] }
+];
+
+let nextId = 5;
+let currentUser = null;
+let usersDB = {};
+
+const TEACHER_LOGIN = 'teacher';
+const TEACHER_PASSWORD = 'teacher';
+const TEACHER_FIO = 'Преподаватель';
+usersDB[TEACHER_LOGIN] = { hashPassword: hashPassword(TEACHER_PASSWORD), role: 'Преподаватель', fio: TEACHER_FIO, group: '-' };
+
+function hashPassword(password) { return btoa(password); }
+function comparePassword(password, hash) { return hashPassword(password) === hash; }
+
+function deleteUser(login) { 
+  if (login === TEACHER_LOGIN) { alert('Нельзя удалить аккаунт преподавателя!'); return; }
+  users = users.filter(user => user.login !== login); 
+  delete usersDB[login]; 
+  renderUsersTable(); 
+  renderRatingTable();
+  alert(`Пользователь ${login} удалён.`); 
+}
+
+function editUser(login) { 
+  if (login === TEACHER_LOGIN) { alert('Нельзя редактировать аккаунт преподавателя!'); return; }
+  const user = users.find(u => u.login === login); 
+  if (!user) return;
+  const newFio = prompt("Введите новое ФИО:", user.fio); 
+  if (newFio === null) return;
+  const newLogin = prompt("Введите новый логин:", user.login); 
+  if (newLogin === null || newLogin.trim() === '') return;
+  const newRole = prompt("Введите новую роль (Студент/Преподаватель):", user.role); 
+  if (newRole === null) return;
+  const newGroup = prompt("Введите новую группу:", user.group); 
+  if (newGroup === null) return;
+  
+  if (newLogin !== user.login && usersDB[user.login]) {
+    const dbEntry = usersDB[user.login]; 
+    dbEntry.fio = newFio; 
+    dbEntry.role = newRole; 
+    dbEntry.group = newGroup;
+    delete usersDB[user.login]; 
+    usersDB[newLogin.trim()] = dbEntry;
+  } else if (usersDB[user.login]) { 
+    usersDB[user.login].fio = newFio; 
+    usersDB[user.login].role = newRole; 
+    usersDB[user.login].group = newGroup; 
+  }
+  user.fio = newFio; 
+  user.login = newLogin.trim(); 
+  user.role = newRole; 
+  user.group = newGroup;
+  renderUsersTable(); 
+  renderRatingTable(); 
+  alert("✅ Данные обновлены.");
+}
+
+function renderUsersTable() { 
+  const tb = document.getElementById('usersTableBody'); 
+  if (!tb) return; 
+  tb.innerHTML = '';
+  users.forEach(u => { 
+    tb.innerHTML += `<tr><td>${u.fio}</td><td>${u.login}</td><td>${u.role}</td><td>${u.group}</td><td><button class="btn btn-sm btn-success" onclick="editUser('${u.login}')">Редактировать</button><button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.login}')">Удалить</button></td></tr>`; 
+  });
+}
+
+function renderRatingTable() { 
+  const rb = document.getElementById('ratingTableBody'); 
+  if (!rb) return; 
+  rb.innerHTML = '';
+  
+  const studentPoints = {};
+  achievements.filter(a => a.status === 'approved').forEach(a => {
+    if (!studentPoints[a.studentFio]) studentPoints[a.studentFio] = 0;
+    studentPoints[a.studentFio] += a.points;
+  });
+  
+  const students = users.filter(u => u.role === 'Студент');
+  students.sort((a, b) => (studentPoints[b.fio] || 0) - (studentPoints[a.fio] || 0));
+  
+  students.forEach((u, i) => { 
+    const points = studentPoints[u.fio] || 0;
+    rb.innerHTML += `<tr><td>${i+1}</td><td>${u.fio}</td><td>${u.group}</td><td>${points}</td></tr>`; 
+  });
+}
+
+function formatDate(d) { return new Date(d).toLocaleDateString('ru-RU'); }
+function getStatusColor(s) { return { pending: 'warning', approved: 'success', rejected: 'danger' }[s] || 'secondary'; }
+function getStatusText(s) { return { pending: 'Ожидает проверки', approved: 'Одобрено', rejected: 'Отклонено' }[s] || 'Неизвестно'; }
+function showPhoto(u) { document.getElementById('modalImage').src = u; }
+
+function renderAchievements(filter = 'all') {
+  const c = document.getElementById('achievementsList'); 
+  if (!c) return; 
+  c.innerHTML = '';
+  let f = achievements.filter(a => a.status !== 'pending');
+  if (filter !== 'all') f = f.filter(a => a.status === filter);
+  if (!f.length) { c.innerHTML = '<p class="text-muted" style="color: #1e293b; text-shadow: none;">Достижений не найдено</p>'; return; }
+  f.forEach((a, i) => {
+    const item = document.createElement('div');
+    item.className = `achievement-item ${a.status}`;
+    item.style.animationDelay = `${i * 0.08}s`;
+    
+    let photosHtml = '';
+    if (a.photos?.length) {
+      photosHtml = `<div class="achievement-item-photos">${a.photos.map(p => 
+        `<img src="${p}" class="achievement-item-photo" data-bs-toggle="modal" data-bs-target="#photoModal" onclick="showPhoto('${p}')">`
+      ).join('')}</div>`;
+    }
+    
+    item.innerHTML = `
+      <div class="achievement-item-title">${a.name}</div>
+      <div class="achievement-item-meta">
+        <strong>Студент:</strong> ${a.studentFio} (${a.studentGroup})<br>
+        <strong>Тип:</strong> ${a.type} | <strong>Уровень:</strong> ${a.level}<br>
+        <strong>Дата:</strong> ${formatDate(a.date)} | <strong>Баллы:</strong> ${a.points}<br>
+        <span class="badge bg-${getStatusColor(a.status)} mt-1">${getStatusText(a.status)}</span>
+      </div>
+      ${photosHtml}
+    `;
+    c.appendChild(item);
+  });
+}
+
+function renderPendingForTeacher() {
+  const c = document.getElementById('pendingAchievementsList'); 
+  if (!c) return; 
+  c.innerHTML = '';
+  const p = achievements.filter(a => a.status === 'pending');
+  if (!p.length) { c.innerHTML = '<p class="text-muted">Нет достижений на проверке</p>'; return; }
+  p.forEach((a, i) => {
+    const card = document.createElement('div'); 
+    card.className = 'card-3d mb-3'; 
+    card.style.animationDelay = `${i*0.08}s`;
+    let ph = a.photos?.length ? `<div class="mt-2"><small>Фото:</small><br>${a.photos.map(p => `<img src="${p}" class="photo-thumb me-2" onclick="showPhoto('${p}')" data-bs-toggle="modal" data-bs-target="#photoModal">`).join('')}</div>` : '';
+    card.innerHTML = `<div class="achievement-card pending-card p-3">
+      <h5 class="fw-bold">${a.name}</h5><p><strong>Студент:</strong> ${a.studentFio} (${a.studentGroup})</p>
+      <p><strong>Тип:</strong> ${a.type} | <strong>Уровень:</strong> ${a.level}</p><p><strong>Дата:</strong> ${formatDate(a.date)} | <strong>Баллы:</strong> ${a.points}</p>
+      ${ph}<div class="mt-3"><button class="btn btn-success btn-sm me-2" onclick="approveAchievement(${a.id})">Одобрить</button><button class="btn btn-danger btn-sm" onclick="rejectAchievement(${a.id})">Отклонить</button></div></div>`;
+    c.appendChild(card);
+  });
+}
+
+function renderReports() {
+  const c = document.getElementById('reportsContainer'); 
+  if (!c) return; 
+  c.innerHTML = '';
+  const ab = achievements.filter(a => a.studentFio.includes('Аббасов'));
+  let tp = 0, ap = 0, pe = 0, re = 0;
+  ab.forEach(a => { if(a.status==='approved'){tp+=a.points;ap++;} if(a.status==='pending')pe++; if(a.status==='rejected')re++; });
+  
+  c.innerHTML = `
+    <div class="mt-3">
+      <h5 class="fw-bold mb-3" style="color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">📊 Отчёт: Аббасов Э. М. (22ИПВ)</h5>
+      <div class="row mb-4 text-center g-3">
+        <div class="col-md-3"><div class="p-3 rounded" style="background: rgba(76,29,149,0.85); color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6);"><h4 class="fw-bold">${ap}</h4><small>Одобрено</small></div></div>
+        <div class="col-md-3"><div class="p-3 rounded" style="background: rgba(76,29,149,0.85); color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6);"><h4 class="fw-bold">${pe}</h4><small>На проверке</small></div></div>
+        <div class="col-md-3"><div class="p-3 rounded" style="background: rgba(76,29,149,0.85); color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6);"><h4 class="fw-bold">${re}</h4><small>Отклонено</small></div></div>
+        <div class="col-md-3"><div class="p-3 rounded" style="background: rgba(76,29,149,0.85); color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6);"><h4 class="fw-bold">${tp}</h4><small>Итого баллов</small></div></div>
+      </div>
+      <h6 class="mb-3 pb-2" style="color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6); border-bottom: 1px solid rgba(255,255,255,0.3);">Детализация:</h6>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Название</th><th>Тип</th><th>Уровень</th><th>Дата</th><th>Баллы</th><th>Статус</th></tr></thead>
+          <tbody>
+            ${ab.length ? ab.map(a => `<tr><td>${a.name}</td><td>${a.type}</td><td>${a.level}</td><td>${formatDate(a.date)}</td><td>${a.status==='approved'?a.points:'-'}</td><td><span class="badge bg-${getStatusColor(a.status)}">${getStatusText(a.status)}</span></td></tr>`).join('') : '<tr><td colspan="6" class="text-center">Нет данных</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderUsersTable(); 
+  renderRatingTable(); 
+  renderAchievements(); 
+  renderPendingForTeacher(); 
+  renderReports();
+  
+  document.querySelectorAll('.filter-btn').forEach(btn => { 
+    btn.addEventListener('click', function() { 
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
+      this.classList.add('active'); 
+      renderAchievements(this.dataset.status); 
+    }); 
+  });
+  
+  document.getElementById('achievementForm').addEventListener('submit', function(e) { 
+    e.preventDefault();
+    const na = { 
+      id: nextId++, 
+      type: document.getElementById('achievementType').value, 
+      level: document.getElementById('level').value, 
+      name: document.getElementById('eventName').value, 
+      date: document.getElementById('date').value, 
+      points: Math.floor(Math.random()*40)+10, 
+      status: 'pending', 
+      studentFio: document.getElementById('fullName').value, 
+      studentGroup: currentUser?.group||'22ИПВ', 
+      photos: [] 
+    };
+    achievements.push(na); 
+    alert('✅ Достижение отправлено на проверку преподавателю!'); 
+    this.reset(); 
+    renderPendingForTeacher(); 
+    renderReports();
+  });
+  
+  const tt = document.getElementById('themeToggle');
+  tt.addEventListener('click', () => { 
+    document.body.classList.toggle('dark-mode'); 
+    tt.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙'; 
+    localStorage.setItem('theme', document.body.classList.contains('dark-mode')?'dark':'light'); 
+  });
+  if (localStorage.getItem('theme')==='dark') { 
+    document.body.classList.add('dark-mode'); 
+    tt.textContent = '☀️'; 
+  }
+});
+
+function approveAchievement(id) { 
+  const a = achievements.find(x=>x.id===id); 
+  if(!a) return; 
+  a.status='approved'; 
+  alert('✅ Одобрено!'); 
+  renderPendingForTeacher(); 
+  renderAchievements(); 
+  renderReports(); 
+  renderRatingTable();
+}
+
+function rejectAchievement(id) { 
+  const a = achievements.find(x=>x.id===id); 
+  if(!a) return; 
+  a.status='rejected'; 
+  alert('❌ Отклонено!'); 
+  renderPendingForTeacher(); 
+  renderAchievements(); 
+  renderReports(); 
+}
+
+document.getElementById('showLogin').addEventListener('click', function() { 
+  document.getElementById('loginForm').classList.remove('d-none'); 
+  document.getElementById('registerForm').classList.add('d-none'); 
+  this.classList.add('active'); 
+  document.getElementById('showRegister').classList.remove('active'); 
+});
+
+document.getElementById('showRegister').addEventListener('click', function() { 
+  document.getElementById('registerForm').classList.remove('d-none'); 
+  document.getElementById('loginForm').classList.add('d-none'); 
+  this.classList.add('active'); 
+  document.getElementById('showLogin').classList.remove('active'); 
+});
+
+document.getElementById('loginForm').addEventListener('submit', function(e) { 
+  e.preventDefault(); 
+  const l = document.getElementById('authLogin').value.trim(); 
+  const p = document.getElementById('authPassword').value.trim(); 
+  if(l&&p) { 
+    if(l===TEACHER_LOGIN && comparePassword(p, usersDB[TEACHER_LOGIN].hashPassword)) { 
+      currentUser = { login: TEACHER_LOGIN, fio: TEACHER_FIO, role: 'Преподаватель', group: '-' }; 
+      alert('Вы вошли как преподаватель'); 
+      bootstrap.Modal.getInstance(document.getElementById('authModal'))?.hide(); 
+      updateUIAfterLogin(); 
+      return; 
+    } 
+    if(usersDB[l]) { 
+      if(comparePassword(p, usersDB[l].hashPassword)) { 
+        currentUser = { 
+          login: l, 
+          fio: usersDB[l].fio, 
+          role: usersDB[l].role, 
+          group: usersDB[l].group 
+        }; 
+        alert('Вы вошли как ' + currentUser.fio); 
+        bootstrap.Modal.getInstance(document.getElementById('authModal'))?.hide(); 
+        updateUIAfterLogin(); 
+      } else { 
+        alert('Неверный пароль'); 
+      } 
+    } else { 
+      alert('Пользователь не найден'); 
+    } 
+  } 
+});
+
+document.getElementById('registerForm').addEventListener('submit', function(e) { 
+  e.preventDefault(); 
+  const fn = document.getElementById('regFullName').value.trim(); 
+  const l = document.getElementById('regLogin').value.trim(); 
+  const p = document.getElementById('regPassword').value.trim(); 
+  if(l&&p&&fn) { 
+    if(l===TEACHER_LOGIN) { 
+      alert('Логин зарезервирован для преподавателя!'); 
+      return; 
+    } 
+    if(!usersDB[l]) { 
+      usersDB[l] = { 
+        hashPassword: hashPassword(p), 
+        role: 'Студент', 
+        fio: fn, 
+        group: '22ИПВ' 
+      }; 
+      users.push({ fio: fn, login: l, role: 'Студент', group: '22ИПВ' }); 
+      alert('Регистрация успешна! Теперь вы можете войти.'); 
+      document.getElementById('showLogin').click(); 
+      document.getElementById('registerForm').reset();
+    } else { 
+      alert('Логин занят'); 
+    } 
+  } 
+});
+
+function updateUIAfterLogin() {
+  document.querySelector('.navbar-brand').textContent = 'Добро пожаловать, ' + currentUser.fio;
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('btnAuth').classList.add('d-none');
+  document.getElementById('btnLogout').classList.remove('d-none');
+  document.getElementById('themeToggle').classList.remove('d-none');
+  document.getElementById('admin-tab').style.display = currentUser?.role==='Преподаватель'?'':'none';
+  renderAchievements(); 
+  renderPendingForTeacher(); 
+  renderRatingTable(); 
+  renderReports();
+}
+
+document.getElementById('btnLogout').addEventListener('click', () => { 
+  currentUser = null; 
+  document.getElementById('mainContent').style.display = 'none'; 
+  document.querySelector('.navbar-brand').textContent = 'Учет демонстраций и достижений студентов ЯПЭК'; 
+  document.getElementById('btnAuth').classList.remove('d-none');
+  document.getElementById('btnLogout').classList.add('d-none'); 
+  document.getElementById('themeToggle').classList.add('d-none'); 
+  document.getElementById('admin-tab').style.display = '';
+  setTimeout(() => {
+    new bootstrap.Modal(document.getElementById('authModal')).show();
+  }, 300);
+});
+
+document.getElementById('btnAuth').addEventListener('click', () => { 
+  new bootstrap.Modal(document.getElementById('authModal')).show(); 
+});
+
+window.addEventListener('load', () => { 
+  new bootstrap.Modal(document.getElementById('authModal')).show(); 
+});
+</script>
+</body>
+</html>
