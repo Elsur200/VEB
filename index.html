@@ -133,26 +133,18 @@ body.dark-mode .card-3d > .achievement-card:hover {
   background: linear-gradient(135deg, rgba(237,233,254,0.35), rgba(224,231,255,0.28), rgba(219,234,254,0.32));
   z-index: 0; transition: background 0.5s ease;
 }
-body.dark-mode #add-achievement {
-  color: #c4b5fd;
-}
+
 body.dark-mode #add-achievement::before {
   background: linear-gradient(135deg, rgba(30,27,75,0.45), rgba(23,37,84,0.38), rgba(12,74,110,0.42));
 }
 #add-achievement > * { position: relative; z-index: 1; }
 
 /* === ДОСТИЖЕНИЯ СТУДЕНТОВ — ВАШЕ ФОТО НА ФОНЕ === */
-#my-achievements {
-  background: url() center/cover no-repeat fixed;
-  padding: 20px; border-radius: 24px; position: relative; overflow: hidden;
-}
+
 #my-achievements::before {
   content: ''; position: absolute; inset: 0;
   background: linear-gradient(135deg, rgba(240,253,244,0.35), rgba(220,252,231,0.28), rgba(209,250,229,0.32));
   z-index: 0; transition: background 0.5s ease;
-}
-body.dark-mode #my-achievements {
-  background: url() center/cover no-repeat fixed;
 }
 body.dark-mode #my-achievements::before {
   background: linear-gradient(135deg, rgba(5,46,22,0.45), rgba(6,78,59,0.38), rgba(20,83,45,0.42));
@@ -160,20 +152,7 @@ body.dark-mode #my-achievements::before {
 #my-achievements > * { position: relative; z-index: 1; }
 
 /* === РЕЙТИНГ === */
-#rating {
-  background: url() center/cover no-repeat;
-  position: relative; overflow: hidden; border-radius: 24px; padding: 20px;
-  min-height: 450px;
-}
-#rating::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(237,233,254,0.25), rgba(196,181,253,0.18), rgba(224,231,255,0.22));
-  z-index: 0;
-  transition: background 0.5s ease;
-}
-body.dark-mode #rating {
-  background: url() center/cover no-repeat;
-}
+
 body.dark-mode #rating::before {
   background: linear-gradient(135deg, rgba(15,23,42,0.35), rgba(30,27,75,0.30), rgba(76,29,149,0.25));
 }
@@ -224,24 +203,6 @@ body.dark-mode #rating::before {
 }
 
 /* === ПРЕПОДАВАТЕЛЬ === */
-#admin {
-  background: url() center/cover no-repeat;
-  position: relative; overflow: hidden; border-radius: 24px; padding: 20px;
-  min-height: 500px;
-}
-#admin::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(253,242,248,0.20), rgba(252,231,243,0.15), rgba(243,232,255,0.18));
-  z-index: 0;
-  transition: background 0.5s ease;
-}
-body.dark-mode #admin {
-  background: url() center/cover no-repeat;
-}
-body.dark-mode #admin::before {
-  background: linear-gradient(135deg, rgba(59,7,100,0.30), rgba(76,5,25,0.25), rgba(15,23,42,0.30));
-}
-#admin > * { position: relative; z-index: 1; }
 
 /* Таблица пользователей */
 #users .table-responsive {
@@ -518,7 +479,6 @@ body.dark-mode .db-status.error {
 <nav class="navbar navbar-expand-lg">
 <div class="container">
 <a class="navbar-brand" href="#">
-  <img src=>
   Учет демонстраций и достижений студентов ЯПЭК
 </a>
 <div class="navbar-nav align-items-center">
@@ -638,7 +598,6 @@ body.dark-mode .db-status.error {
 </div>
 <div class="col-md-3">
   <h6><i class="fas fa-globe"></i> Официальный сайт ЯПЭК</h6>
-  <p><a href="https://www.yapek.edu.ru" target="_blank"><i class="fas fa-external-link-alt"></i> www.yapek.edu.ru</a></p>
   <p class="mt-2"><small>© 2026 Ярославский промышленно‑экономический колледж</small></p>
 </div>
 </div>
